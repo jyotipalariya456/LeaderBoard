@@ -18,7 +18,6 @@ const userSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-// Index for better query performance
 userSchema.index({ totalPoints: -1 });
 
 module.exports = mongoose.model('User', userSchema);

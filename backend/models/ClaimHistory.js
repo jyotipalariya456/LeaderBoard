@@ -24,7 +24,6 @@ const claimHistorySchema = new mongoose.Schema({
   timestamps: true,
 });
 
-// Index for better query performance
 claimHistorySchema.index({ userId: 1, claimedAt: -1 });
 
 module.exports = mongoose.model('ClaimHistory', claimHistorySchema);
