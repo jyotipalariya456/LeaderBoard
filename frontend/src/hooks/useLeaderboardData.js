@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export const useLeaderboardData = () => {
   const [users, setUsers] = useState([]);
@@ -7,7 +7,7 @@ export const useLeaderboardData = () => {
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setIsLoading(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/users`);
@@ -16,11 +16,12 @@ export const useLeaderboardData = () => {
     } catch (e) {
       console.error('Failed to fetch users:', e);
       setUsers([]);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
-  };
+  }, [API_BASE_URL]);
 
-  const fetchClaimHistory = async () => {
+  const fetchClaimHistory = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/claims/history`);
       let data = await res.json();
@@ -30,7 +31,7 @@ export const useLeaderboardData = () => {
       console.error('Failed to fetch claim history:', e);
       setClaimHistory([]);
     }
-  };
+  }, [API_BASE_URL]);
 
   const addUser = async (name) => {
     setIsLoading(true);
@@ -38,14 +39,15 @@ export const useLeaderboardData = () => {
       await fetch(`${API_BASE_URL}/api/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name })
+        body: JSON.stringify({ name }),
       });
       await fetchUsers();
     } catch (e) {
       console.error('Error adding user:', e);
       throw e;
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const claimPoints = async (userId) => {
@@ -54,7 +56,7 @@ export const useLeaderboardData = () => {
       const res = await fetch(`${API_BASE_URL}/api/claims`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({ userId }),
       });
       const data = await res.json();
       await fetchUsers();
@@ -81,6 +83,6 @@ export const useLeaderboardData = () => {
     fetchClaimHistory,
     addUser,
     claimPoints,
-    API_BASE_URL
+    API_BASE_URL,
   };
 };
