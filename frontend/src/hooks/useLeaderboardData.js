@@ -63,14 +63,15 @@ export const useLeaderboardData = () => {
     } catch (e) {
       console.error('Error claiming points:', e);
       throw e;
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
     fetchUsers();
     fetchClaimHistory();
-  }, []);
+  }, [fetchUsers, fetchClaimHistory]);
 
   return {
     users,
